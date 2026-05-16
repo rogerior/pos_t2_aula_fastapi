@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, HTTPException
 from pydantic import BaseModel, Field
 
 app = FastAPI(
@@ -18,6 +18,7 @@ app = FastAPI(
     },
 )
 
+API_TOKEN = "123"
 
 @app.get("/teste")
 def hello_world():
@@ -25,15 +26,19 @@ def hello_world():
 
 
 # http://127.0.0.1:8000/soma/3/2
-@app.post("/soma/{numero1}/{numero2}", tags=["Operações matemáticas"])
+@app.post("/soma/v1/{numero1}/{numero2}", tags=["Operações matemáticas"], deprecated=True, summary="Será descontinuado em 15/06")
 def soma(numero1: int, numero2: int):
     total = numero1 + numero2
     return {"resultado": total}
 
 
 # http://127.0.0.1:8000/soma_formato2?numero1=3&numero2=2
-@app.post("/soma_formato2", tags=["Operações matemáticas"])
-def soma_formato2(numero1: int, numero2: int):
+@app.post("/soma/v2", tags=["Operações matemáticas"])
+def soma_formato2(numero1: int, numero2: int, api_token: str):
+    
+    if api_token != API_TOKEN:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token de autenticação inválido")
+    
     total = numero1 + numero2
     return {"resultado": total}
 
@@ -41,10 +46,13 @@ def soma_formato2(numero1: int, numero2: int):
 class Numeros(BaseModel):
     numero1: int = Field(5, description="O primeiro número a ser somado")
     numero2: int = Field(3, description="O segundo número a ser somado")
+    api_token: str = Field(..., description="Token de autenticação para acessar o endpoint")
 
 
 class Resultado(BaseModel):
     resultado: int = Field(..., description="O resultado da soma dos dois números")
+
+
 
 
 # 'http://127.0.0.1:8000/soma_formato3'
@@ -52,7 +60,7 @@ class Resultado(BaseModel):
 #   "numero1": 3,
 #   "numero2": 2
 # }'
-@app.post("/soma_formato3", 
+@app.post("/soma/v3", 
         response_model=Resultado, 
         summary="Soma de dois números utilizando um modelo de dados",
         description="Este endpoint recebe um modelo de dados contendo dois números e retorna o resultado da soma desses números.",
@@ -61,5 +69,13 @@ class Resultado(BaseModel):
         response_description="Processamento realizado com sucesso"
         )
 def soma_formato3(numeros: Numeros):
+    
+    if numeros.api_token != API_TOKEN:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token de autenticação inválido")
+    
+    # Se o numero1 for negativo, retorna um erro
+    if numeros.numero1 < 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="O número 1 não pode ser negativo")
+    
     total = numeros.numero1 + numeros.numero2
     return {"resultado": total}
