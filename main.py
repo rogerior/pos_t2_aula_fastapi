@@ -3,14 +3,23 @@ from enum import Enum
 from fastapi import FastAPI, status, HTTPException, Depends
 from pydantic import BaseModel, Field
 
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("fastapi")
+
+
 
 API_TOKEN = "123"
 
 def common_api_token(api_token: str):
+    logger.info(f"Token recebido: {api_token}")
     
     if api_token != API_TOKEN:
+        logger.warning("Token de autenticação inválido")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token de autenticação inválido")
     
+    logger.info("Token de autenticação válido")
     return {"api_token": api_token}
 
 
