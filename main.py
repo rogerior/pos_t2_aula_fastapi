@@ -1,5 +1,18 @@
-from fastapi import FastAPI, status, HTTPException
+from enum import Enum
+
+from fastapi import FastAPI, status, HTTPException, Depends
 from pydantic import BaseModel, Field
+
+
+API_TOKEN = "123"
+
+def common_api_token(api_token: str):
+    
+    if api_token != API_TOKEN:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token de autenticação inválido")
+    
+    return {"api_token": api_token}
+
 
 app = FastAPI(
     title="Aula",
@@ -16,9 +29,10 @@ app = FastAPI(
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
+    dependencies=[Depends(common_api_token)]
 )
 
-API_TOKEN = "123"
+
 
 @app.get("/teste")
 def hello_world():
@@ -46,7 +60,6 @@ def soma_formato2(numero1: int, numero2: int, api_token: str):
 class Numeros(BaseModel):
     numero1: int = Field(5, description="O primeiro número a ser somado")
     numero2: int = Field(3, description="O segundo número a ser somado")
-    api_token: str = Field(..., description="Token de autenticação para acessar o endpoint")
 
 
 class Resultado(BaseModel):
@@ -70,12 +83,35 @@ class Resultado(BaseModel):
         )
 def soma_formato3(numeros: Numeros):
     
-    if numeros.api_token != API_TOKEN:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token de autenticação inválido")
-    
     # Se o numero1 for negativo, retorna um erro
     if numeros.numero1 < 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="O número 1 não pode ser negativo")
     
     total = numeros.numero1 + numeros.numero2
     return {"resultado": total}
+
+
+
+class TipoOperacao(str, Enum):
+    soma = "soma"
+    subtracao = "subtracao"
+    multiplicacao = "multiplicacao"
+    divisao = "divisao"
+
+
+@app.post("/operacao_matematica", tags=["Operações matemáticas"])
+def operacao_matematica(numeros: Numeros, operacao: TipoOperacao):
+    
+    if operacao == TipoOperacao.soma:
+        resultado = numeros.numero1 + numeros.numero2
+    
+    elif operacao == TipoOperacao.subtracao:
+        resultado = numeros.numero1 - numeros.numero2
+    
+    elif operacao == TipoOperacao.multiplicacao:
+        resultado = numeros.numero1 * numeros.numero2
+    
+    elif operacao == TipoOperacao.divisao:
+        resultado = numeros.numero1 / numeros.numero2
+    
+    return {"resultado": resultado}
