@@ -14,8 +14,8 @@ def gerar_historia(historia: Historia):
 
     prompt = f"Escreva uma história sobre o tema: {historia.tema}"
 
-    historia = execute_prompt(prompt)
+    resposta = execute_prompt(prompt)
     
     logger.info(f"História gerada com sucesso para o tema: {historia.tema}")
 
-    return {"historia": historia}
+    return {"historia": resposta}
