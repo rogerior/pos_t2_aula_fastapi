@@ -54,3 +54,9 @@ class ExtractURLRequest(BaseModel):
 class ExtractURLResponse(BaseModel):
     url: str = Field(..., description="A URL da qual o conteúdo foi extraído")
     content: str = Field(..., description="O conteúdo extraído da URL")
+
+
+class HealthCheck(BaseModel):
+    """Response model to validate and return when performing a health check."""
+
+    status: str = "OK"
