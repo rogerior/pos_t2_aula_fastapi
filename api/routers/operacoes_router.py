@@ -12,14 +12,14 @@ router = APIRouter()
     deprecated=True,
     summary="Será descontinuado em 15/06",
 )
-def soma(numero1: int, numero2: int):
+async def soma(numero1: int, numero2: int):
     total = numero1 + numero2
     return {"resultado": total}
 
 
 # http://127.0.0.1:8000/soma_formato2?numero1=3&numero2=2
 @router.post("/soma/v2")
-def soma_formato2(numero1: int, numero2: int, api_token: str):
+async def soma_formato2(numero1: int, numero2: int, api_token: str):
 
     total = numero1 + numero2
     return {"resultado": total}
@@ -38,7 +38,7 @@ def soma_formato2(numero1: int, numero2: int, api_token: str):
     status_code=status.HTTP_200_OK,
     response_description="Processamento realizado com sucesso",
 )
-def soma_formato3(numeros: Numeros):
+async def soma_formato3(numeros: Numeros):
 
     # Se o numero1 for negativo, retorna um erro
     if numeros.numero1 < 0:
@@ -52,7 +52,7 @@ def soma_formato3(numeros: Numeros):
 
 
 @router.post("/operacao_matematica/v1", tags=["Operações matemáticas"])
-def operacao_matematica(numeros: Numeros, operacao: TipoOperacao):
+async def operacao_matematica(numeros: Numeros, operacao: TipoOperacao):
 
     if operacao == TipoOperacao.soma:
         resultado = numeros.numero1 + numeros.numero2
