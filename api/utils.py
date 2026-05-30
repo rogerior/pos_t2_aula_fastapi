@@ -84,7 +84,7 @@ def execute_prompt(prompt: str, model: str = "llama-3.1-8b-instant"):
     )
 
     resultado = chat_completion.choices[0].message.content
-    logger.info(f"Resposta gerada: {resultado}")
+    logger.debug(f"Resposta gerada: {resultado}")
     logger.info(f"Tokens utilizados: {chat_completion.usage.total_tokens}")
 
     return resultado
