@@ -4,9 +4,6 @@ from groq import Groq
 import os
 
 
-API_TOKEN = str(os.getenv("API_TOKEN"))
-
-
 def get_logger():
     """
     Configura e retorna uma instância do logger da aplicação.
@@ -40,6 +37,7 @@ def common_api_token(api_token: str):
         dict: Dicionário contendo o token validado no formato
         ``{"api_token": api_token}``.
     """
+    API_TOKEN = str(os.getenv("API_TOKEN"))
     logger = get_logger()
     logger.info(f"Token recebido: {api_token}")
 
