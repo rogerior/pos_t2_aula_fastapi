@@ -12,7 +12,7 @@ load_dotenv(find_dotenv())
 app = FastAPI(
     title="Aula",
     description="Contém todos os **endpoints** disponíves para serem utilizados",
-    summary="API desenvolvida durante a aula de Construção de APIs para IA",
+    summary="API desenvolvida durante a aula de Construção de APIs para IA, utilizando FastAPI",
     version="0.1",
     terms_of_service="http://example.com/terms/",
     contact={
