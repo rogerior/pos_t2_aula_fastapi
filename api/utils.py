@@ -67,7 +67,9 @@ def execute_prompt(prompt: str, model: str = "llama-3.1-8b-instant"):
         str: Conteúdo da resposta gerada pelo modelo.
     """
     logger = get_logger()
-    logger.info(f"Iniciando execução de prompt. Modelo: {model}. Prompt recebido: {prompt}")
+    logger.info(
+        f"Iniciando execução de prompt. Modelo: {model}. Prompt recebido: {prompt}"
+    )
 
     client = Groq(
         api_key=os.getenv("GROQ_API_KEY"),
